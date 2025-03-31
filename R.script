@@ -1,0 +1,48 @@
+#clean the metadata
+#keep only seeds or germinated ones
+
+#code for only one sample
+setwd("C:/Users/vg1u23/OneDrive - University of Southampton/Desktop/PhD_Gschiel/Project/Project1_Bioinformatics/metadata_files/metadataperstudy/Project_PlantFamily")
+library(readxl)
+library(dplyr)
+library(writexl)  # for writing back to Excel
+
+# Load the Excel file (sheet = 1 by default, or change if needed)
+df<- read_excel("PRJEB27033_with_family.xlsx")
+
+# Filter out rows where sample_type is 'Seed'
+non_seed_samples <- df %>%
+  filter(sample_type == "Seed")
+
+# Save the result to a new Excel file
+write_xlsx(non_seed_samples, "non_seed_samples.xlsx")
+
+
+#more than one sample
+library(readxl)
+library(dplyr)
+library(writexl)
+
+# Set the folder path
+folder_path <- "C:/Users/vg1u23/OneDrive - University of Southampton/Desktop/PhD_Gschiel/Project/Project1_Bioinformatics/metadata_files/metadataperstudy/Project_PlantFamily"  # change this to your actual path
+
+# List all files ending with _with_family.xlsx
+files <- list.files(path = folder_path, pattern = "_with_family.xlsx$", full.names = TRUE)
+
+# Loop through each file
+for (file in files) {
+  # Read the Excel file
+  df <- read_excel(file)
+  
+  # Filter: keep only rows where sample_type == "Seed"
+  if ("sample_type" %in% colnames(df)) {
+    seed_samples <- df %>%
+      filter(sample_type == "Seed")
+    
+    # Save the filtered file
+    output_file <- file.path(folder_path, paste0(tools::file_path_sans_ext(basename(file)), "_only_seed.xlsx"))
+    write_xlsx(seed_samples, output_file)
+  } else {
+    message(paste("Skipped:", file, "- no 'sample_type' column found."))
+  }
+}
